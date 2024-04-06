@@ -8,8 +8,8 @@ Aggregates information about all resources in an AWS account, and ouputus it thr
 
 ### Resource
 
-`resource{resource_arn="arn:aws:ec2:eu-central-1:123456789012:route-table/rtb-db06309ec8ce58bb"} 1`
+`resource{arn="arn:aws:ec2:eu-central-1:123456789012:route-table/rtb-db06309ec8ce58bb"} 1`
 
 ### Resource Tag
 
-`resource_tag{resource_arn="arn:aws:ec2:eu-central-1:123456789012:route-table/rtb-db06309ec8ce58bb",tag="Name",value="MyBeautifulRouteTable"} 1`
+`resource_tag{arn="arn:aws:ec2:eu-central-1:123456789012:route-table/rtb-db06309ec8ce58bb",tag="Name",value="MyBeautifulRouteTable"} 1`
