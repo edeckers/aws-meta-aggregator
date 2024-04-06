@@ -7,7 +7,7 @@ from typing import Callable
 
 import boto3
 
-from aws_meta_aggregator.prometheus_printers import (
+from aws_meta_aggregator.printers.prometheus_printers import (
     PrometheusResourcePrinter,
     PrometheusTagsPrinter,
 )

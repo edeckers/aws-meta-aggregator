@@ -1,32 +1,18 @@
 [tool.poetry]
-name = "aws-meta-aggregator"
+name = "aggregator-library"
 version = "0.1.0"
 description = "Aggregate information for all resources in AWS account"
 authors = ["Ely Deckers <e.deckers@gmail.com>"]
 include = ["LICENSE"]
 license = "MPL-2.0"
 readme = "README.md"
-package-mode = false
+
+[[tool.poetry.packages]]
+include = "aws_meta_aggregator"
 
 [tool.poetry.dependencies]
 boto3 = "^1.34.79"
 python = "~3.12"
-prometheus-api = { path = "src/packages/prometheus-api", develop = true }
-aggregator-library = { path = "src/packages/aggregator-library", develop = true }
-
-[tool.poetry.group.dev.dependencies]
-bandit = { extras = ["toml"], version = "^1.7.8" }
-black = "^24.3.0"
-boto3-stubs = "^1.32.79"
-coverage = { extras = ["toml"], version = "^7.4.4" }
-isort = "^5.13.2"
-mypy = "^1.9.0"
-nox = "^2024.3.2"
-pre-commit = "^3.7.0"
-pylint = "^3.1.0"
-pytest = "^8.1.1"
-pytest-cov = "^4"
-moto = { extras = ["resourcegroupstaggingapi"], version = "^5.0.5" }
 
 [build-system]
 requires = ["poetry-core"]
