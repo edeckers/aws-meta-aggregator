@@ -9,25 +9,25 @@ Aggregates information about all resources in an AWS account
 
 ### Resource
 
-`resource{resource_arn="arn:aws:ec2:eu-central-1:123456789012:route-table/rtb-db06309ec8ce58bb"} 1`
+`resource{arn="arn:aws:ec2:eu-central-1:123456789012:route-table/rtb-db06309ec8ce58bb"} 1`
 
 ### Resource Tag
 
-`resource_tag{resource_arn="arn:aws:ec2:eu-central-1:123456789012:route-table/rtb-db06309ec8ce58bb",tag="Name",value="MyBeautifulRouteTable"} 1`
+`resource_tag{arn="arn:aws:ec2:eu-central-1:123456789012:route-table/rtb-db06309ec8ce58bb",tag="Name",value="MyBeautifulRouteTable"} 1`
 
 ## PromQL Examples
 
 Retrieving all resources with a tag `Name`
 
-`resource and on(resource_arn) (resource_tag {tag="Name"})`
+`resource and on(arn) (resource_tag {tag="Name"})`
 
 And all resources that are _missing_ a tag `Name`
 
-`resource unless on(resource_arn) (resource_tag {tag="Name"})`
+`resource unless on(arn) (resource_tag {tag="Name"})`
 
 Resources without any tags at all
 
-`resource unless on(resource_arn) resource_tag`
+`resource unless on(arn) resource_tag`
 
 ## Contributing
 

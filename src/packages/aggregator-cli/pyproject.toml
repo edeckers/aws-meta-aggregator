@@ -13,9 +13,6 @@ include = "prometheus_api"
 [tool.poetry.dependencies]
 python = "~3.12"
 aggregator-library = { path = "../aggregator-library", develop = true }
-fastapi = "^0.110.1"
-uvicorn = "^0.29.0"
-structlog = "^24.1.0"
 
 
 [build-system]

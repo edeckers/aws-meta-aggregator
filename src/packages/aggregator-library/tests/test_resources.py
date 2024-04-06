@@ -1,7 +1,8 @@
 from typing import Any
+
 import boto3
-from moto import mock_aws
 import pytest
+from moto import mock_aws
 
 from aws_meta_aggregator.printers.prometheus_printers import (
     PrometheusResourcePrinter,

@@ -1,83 +1,59 @@
-#!/usr/bin/env python3
-
 import argparse
-import dataclasses
-import json
-from typing import Callable
 
-import boto3
+import structlog
+import uvicorn
 
-from aws_meta_aggregator.printers.prometheus_printers import (
-    PrometheusResourcePrinter,
-    PrometheusTagsPrinter,
-)
-from aws_meta_aggregator.resources import Resource, Resources, ResourceTag
+from prometheus_api.api import bootstrap_api
+from prometheus_api.bootstrap import bootstrap
 
-__parser = argparse.ArgumentParser(
-    prog="AWS Meta CLI", description="Access AWS resource information through CLI"
-)
+api = bootstrap_api()
 
+_logger = structlog.get_logger()
 
-__command_subparsers = __parser.add_subparsers(help="commands", dest="command")
-
-__resources_parser = __command_subparsers.add_parser(
-    name="list-resources",
-    add_help=True,
-    help="List resources in a given format",
+__cli_parser = argparse.ArgumentParser(
+    prog="Prometheus Api", description="CLI to configure and start Prometheus Api"
 )
 
-__resources_parser.add_argument("-f", "--format", type=str, required=True)
+
+__command_subparsers = __cli_parser.add_subparsers(help="commands", dest="command")
+
+__run_api_parser = __command_subparsers.add_parser(
+    name="run-api",
+    add_help=False,
+    help="Start the Prometheus Api in uvicorn ASGI web server",
+)
+
+__run_api_parser.add_argument(
+    "-h",
+    "--host",
+    type=str,
+    required=False,
+    default="0.0.0.0",  # nosec # B104 - hardcoded bind all interfaces; by design
+)
+__run_api_parser.add_argument("-p", "--port", type=int, required=False, default=8_000)
 
 
-def __json_resource_printer(resource: Resource) -> None:
-    print(json.dumps(dataclasses.asdict(resource)))
-
-
-def __json_tags_printer(
-    arn: str, tags: list[ResourceTag]  # pylint: disable=unused-argument
-) -> None:
-    pass
-
-
-def __list_resources(arguments: argparse.Namespace) -> None:
-
-    if not arguments.format in ["json", "prometheus"]:
-        raise ValueError(
-            f"Unknown format '{arguments.format}', expected one of 'json' or 'prometheus'"
-        )
-
-    print_resource = (
-        __json_resource_printer
-        if arguments.format == "json"
-        else PrometheusResourcePrinter().print
-    )
-    print_tags = (
-        __json_tags_printer
-        if arguments.format == "json"
-        else PrometheusTagsPrinter().print
+def __run_api(arguments: argparse.Namespace) -> None:
+    _logger.info(
+        "Starting Prometheus Api",
+        {
+            "host": arguments.host,
+            "port": arguments.port,
+        },
     )
 
-    resources_client = Resources(boto3.client("resourcegroupstaggingapi"))
-
-    resources = resources_client.retrieve_resources()
-
-    for resource in resources:
-        print_resource(resource)
-
-        print_tags(resource.arn, resource.tags)
-
-
-__map_commands_to_processors: dict[str, Callable[[argparse.Namespace], None]] = {
-    "list-resources": __list_resources,
-}
+    uvicorn.run(api, host=arguments.host, port=arguments.port)
 
 
 def __run_command(arguments: argparse.Namespace) -> None:
-    if arguments.command not in __map_commands_to_processors:
-        raise ValueError(f"Unknown command: {arguments.command}")
+    bootstrap()
 
-    __map_commands_to_processors[arguments.command](arguments)
+    if arguments.command == "run-api":
+        __run_api(arguments)
+        return
+
+    raise ValueError(f"Unknown command: {arguments.command}")
 
 
 if __name__ == "__main__":
-    __run_command(__parser.parse_args())
+    __run_command(__cli_parser.parse_args())

@@ -22,6 +22,7 @@ cd_to_source_directory
 source ../bin/shared.sh
 
 echo "Running linters"
-run_linter aws_meta_aggregator
-run_linter tests
+run_linter packages/aggregator-library/aws_meta_aggregator
+run_linter packages/aggregator-library/tests
+run_linter packages/prometheus-api/prometheus_api
 echo "Finished linters"

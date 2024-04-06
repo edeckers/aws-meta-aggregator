@@ -16,6 +16,7 @@ cd_to_source_directory
 source ../bin/shared.sh
 
 echo "Formatting modules"
-format aws_meta_aggregator
-format tests
+format packages/aggregator-library/aws_meta_aggregator
+format packages/aggregator-library/tests
+format packages/prometheus-api/prometheus_api
 echo "Formatted modules"
