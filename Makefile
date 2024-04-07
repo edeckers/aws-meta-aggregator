@@ -29,7 +29,7 @@ lint: poetry.lock
 	bin/lint.sh
 
 release: poetry.lock
-	bin/release-all.sh
+	bin/release-api-docker.sh
 
 test: poetry.lock
 	bin/test.sh
