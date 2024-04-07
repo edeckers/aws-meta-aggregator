@@ -1,6 +1,5 @@
 import uuid
 
-
 from aws_meta_aggregator.printers.prometheus_printers import (
     PrometheusResourcePrinter,
     PrometheusTagsPrinter,

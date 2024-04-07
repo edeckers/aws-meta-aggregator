@@ -4,7 +4,10 @@ from fastapi.middleware.cors import CORSMiddleware
 import prometheus_api.routers.metrics_router as mx_factory
 
 
-def bootstrap_api() -> FastAPI:
+def bootstrap_api(
+    resource_label_allowlist: list[str],
+    resource_tag_label_allowlist: list[str],
+) -> FastAPI:
     app = FastAPI()
 
     origins = ["*"]
@@ -18,7 +21,9 @@ def bootstrap_api() -> FastAPI:
         allow_headers=["*"],
     )
 
-    metrics_router = mx_factory.create()
+    metrics_router = mx_factory.create(
+        resource_label_allowlist, resource_tag_label_allowlist
+    )
 
     app.include_router(metrics_router)
 

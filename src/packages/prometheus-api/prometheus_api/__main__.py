@@ -8,9 +8,9 @@ from prometheus_api.bootstrap import bootstrap
 from prometheus_api.consts import (
     APPLICATION_PROMETHEUS_HOST,
     APPLICATION_PROMETHEUS_PORT,
+    APPLICATION_PROMETHEUS_RESOURCE_LABEL_ALLOWLIST,
+    APPLICATION_PROMETHEUS_RESOURCE_TAG_LABEL_ALLOWLIST,
 )
-
-api = bootstrap_api()
 
 _logger = structlog.get_logger()
 
@@ -38,6 +38,22 @@ __run_api_parser.add_argument(
     "-p", "--port", type=int, required=False, default=APPLICATION_PROMETHEUS_PORT
 )
 
+__run_api_parser.add_argument(
+    "-ra",
+    "--resource-label-allowlist",
+    type=str,
+    required=False,
+    default=" ".join(APPLICATION_PROMETHEUS_RESOURCE_LABEL_ALLOWLIST),
+)
+
+__run_api_parser.add_argument(
+    "-rta",
+    "--resource-tag-label-allowlist",
+    type=str,
+    required=False,
+    default=" ".join(APPLICATION_PROMETHEUS_RESOURCE_TAG_LABEL_ALLOWLIST),
+)
+
 
 def __run_api(arguments: argparse.Namespace) -> None:
     _logger.info(
@@ -45,10 +61,21 @@ def __run_api(arguments: argparse.Namespace) -> None:
         {
             "host": arguments.host,
             "port": arguments.port,
+            "resource_label_allowlist": arguments.resource_label_allowlist,
+            "resource_tag_label_allowlist": arguments.resource_tag_label_allowlist,
         },
     )
 
-    uvicorn.run(api, host=arguments.host, port=arguments.port)
+    api = bootstrap_api(
+        resource_label_allowlist=arguments.resource_label_allowlist.split(" "),
+        resource_tag_label_allowlist=arguments.resource_tag_label_allowlist.split(" "),
+    )
+
+    uvicorn.run(
+        api,
+        host=arguments.host,
+        port=arguments.port,
+    )
 
 
 def __run_command(arguments: argparse.Namespace) -> None:

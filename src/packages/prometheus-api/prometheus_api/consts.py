@@ -2,6 +2,7 @@ from aws_meta_aggregator.consts import (
     AWS_AGGREGATOR_RESOURCE_DEFAULT_ALLOWLIST,
     AWS_AGGREGATOR_RESOURCE_TAG_DEFAULT_ALLOWLIST,
 )
+
 from prometheus_api.utils.environment import env
 
 APPLICATION_LOG_LEVEL = env("LOG_LEVEL", "DEBUG")

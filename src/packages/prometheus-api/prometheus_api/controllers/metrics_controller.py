@@ -11,6 +11,14 @@ _logger = structlog.get_logger()
 
 
 class MetricsController:  # pylint: disable=too-few-public-methods
+    def __init__(
+        self,
+        resource_label_allowlist: list[str],
+        resource_tag_label_allowlist: list[str],
+    ) -> None:
+        self.__resource_label_allowlist = resource_label_allowlist
+        self.__resource_tag_label_allowlist = resource_tag_label_allowlist
+
     def get_all(
         self,
     ) -> Response:
@@ -22,8 +30,12 @@ class MetricsController:  # pylint: disable=too-few-public-methods
 
         resources = resources_client.retrieve_resources()
 
-        resource_printer = PrometheusResourcePrinter()
-        tags_printer = PrometheusTagsPrinter()
+        resource_printer = PrometheusResourcePrinter(
+            allowlist=self.__resource_label_allowlist
+        )
+        tags_printer = PrometheusTagsPrinter(
+            allowlist=self.__resource_tag_label_allowlist
+        )
 
         output = []
         for resource in resources:

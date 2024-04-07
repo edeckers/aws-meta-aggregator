@@ -1,10 +1,10 @@
 from typing import Callable
+
 from aws_meta_aggregator.consts import (
     AWS_AGGREGATOR_RESOURCE_DEFAULT_ALLOWLIST,
     AWS_AGGREGATOR_RESOURCE_TAG_DEFAULT_ALLOWLIST,
 )
 from aws_meta_aggregator.resources import Resource, ResourceTag
-
 
 _AVAILABLE_RESOURCE_LABELS: dict[str, Callable[[Resource], str | None]] = {
     "arn": lambda resource: resource.arn,
