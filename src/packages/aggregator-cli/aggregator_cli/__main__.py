@@ -34,9 +34,9 @@ def __json_resource_printer(resource: Resource) -> None:
 
 
 def __json_tags_printer(
-    arn: str, tags: list[ResourceTag]  # pylint: disable=unused-argument
+    tags: list[ResourceTag],
 ) -> None:
-    pass
+    print(json.dumps(list(map(dataclasses.asdict, tags))))
 
 
 def __list_resources(arguments: argparse.Namespace) -> None:
@@ -64,7 +64,7 @@ def __list_resources(arguments: argparse.Namespace) -> None:
     for resource in resources:
         print(print_resource(resource))
 
-        print(print_tags(resource.arn, resource.tags))
+        print(print_tags(resource.tags))
 
 
 __map_commands_to_processors: dict[str, Callable[[argparse.Namespace], None]] = {

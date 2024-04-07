@@ -11,6 +11,8 @@ services:
     environment:
       PROMETHEUS_API_PORT: 8000
       PROMETHEUS_API_HOST: "0.0.0.0"
+      PROMETHEUS_API_RESOURCE_LABEL_ALLOWLIST: "account partition region resource_type service"
+      PROMETHEUS_API_RESOURCE_TAG_LABEL_ALLOWLIST: "account key partition region resource_type service value"
     volumes:
       - $HOME/.aws/config:/root/.aws/config:ro
       - $HOME/.aws/credentials:/root/.aws/credentials:ro

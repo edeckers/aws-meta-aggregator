@@ -1,6 +1,3 @@
-from dataclasses import dataclass
-from datetime import datetime
-
 import boto3
 import structlog
 from aws_meta_aggregator.printers.prometheus_printers import (
@@ -13,15 +10,7 @@ from fastapi import Response
 _logger = structlog.get_logger()
 
 
-@dataclass(frozen=True)
-class CreateDraftForecastRequest:
-    district_id: int
-    time_start: datetime
-    time_end: datetime
-    message: str | None = None
-
-
-class MetricsController:
+class MetricsController:  # pylint: disable=too-few-public-methods
     def get_all(
         self,
     ) -> Response:
@@ -40,7 +29,7 @@ class MetricsController:
         for resource in resources:
             output.append(resource_printer.print(resource))
 
-            output.append(tags_printer.print(resource.arn, resource.tags))
+            output.append(tags_printer.print(resource.tags))
 
         _logger.info(
             "Finished metrics request",

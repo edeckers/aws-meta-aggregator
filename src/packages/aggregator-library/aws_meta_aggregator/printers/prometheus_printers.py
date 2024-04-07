@@ -1,18 +1,82 @@
+from typing import Callable
+from aws_meta_aggregator.consts import (
+    AWS_AGGREGATOR_RESOURCE_DEFAULT_ALLOWLIST,
+    AWS_AGGREGATOR_RESOURCE_TAG_DEFAULT_ALLOWLIST,
+)
 from aws_meta_aggregator.resources import Resource, ResourceTag
 
 
+_AVAILABLE_RESOURCE_LABELS: dict[str, Callable[[Resource], str | None]] = {
+    "arn": lambda resource: resource.arn,
+    "account": lambda resource: resource.account,
+    "partition": lambda resource: resource.partition,
+    "resource_id": lambda resource: resource.resource_id,
+    "service": lambda resource: resource.service,
+    "region": lambda resource: resource.region,
+    "resource_type": lambda resource: resource.resource_type,
+}
+
+_AVAILABLE_RESOURCE_TAG_LABELS: dict[str, Callable[[ResourceTag], str | None]] = {
+    "arn": lambda tag: tag.arn,
+    "account": lambda tag: tag.account,
+    "key": lambda tag: tag.key,
+    "partition": lambda tag: tag.partition,
+    "region": lambda tag: tag.region,
+    "resource_id": lambda tag: tag.resource_id,
+    "resource_type": lambda tag: tag.resource_type,
+    "service": lambda tag: tag.service,
+    "value": lambda tag: tag.value,
+}
+
+_DEFAULT_ALLOWLIST = AWS_AGGREGATOR_RESOURCE_DEFAULT_ALLOWLIST.split(" ")
+_DEFAULT_RESOURCE_TAG_ALLOWLIST = AWS_AGGREGATOR_RESOURCE_TAG_DEFAULT_ALLOWLIST.split(
+    " "
+)
+
+
 class PrometheusResourcePrinter:  # pylint: disable=too-few-public-methods
+    def __init__(self, allowlist: list[str] = _DEFAULT_ALLOWLIST) -> None:
+        self.__allowlist = allowlist
+
     def print(self, resource: Resource) -> str:
-        return f'resource{{arn="{resource.arn}"}} 1'
+        allowed_labels = _AVAILABLE_RESOURCE_LABELS.keys() & self.__allowlist
+
+        labels = [
+            f'{label}="{_AVAILABLE_RESOURCE_LABELS[label](resource)}"'
+            for label in allowed_labels
+        ]
+
+        return "".join(
+            [
+                "resource{",
+                ", ".join(labels),
+                "} 1",
+            ]
+        )
 
 
 class PrometheusTagsPrinter:  # pylint: disable=too-few-public-methods
-    def print(self, arn: str, tags: list[ResourceTag]) -> str:
+    def __init__(self, allowlist: list[str] = _DEFAULT_RESOURCE_TAG_ALLOWLIST) -> None:
+        self.__allowlist = allowlist
+
+    def print(self, tags: list[ResourceTag]) -> str:
+        allowed_labels = _AVAILABLE_RESOURCE_TAG_LABELS.keys() & self.__allowlist
+
         output = []
         for tag in tags:
-            # pylint: disable=line-too-long
+            labels = [
+                f'{label}="{_AVAILABLE_RESOURCE_TAG_LABELS[label](tag)}"'
+                for label in allowed_labels
+            ]
+
             output.append(
-                f'resource_tag{{arn="{arn}",tag="{tag.tag}",value="{tag.value}"}} 1'
+                "".join(
+                    [
+                        "resource_tag{",
+                        ", ".join(labels),
+                        "} 1",
+                    ]
+                )
             )
 
         return "\n".join(output)
