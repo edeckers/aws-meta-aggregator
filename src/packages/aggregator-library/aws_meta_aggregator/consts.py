@@ -1,6 +1,6 @@
 AWS_AGGREGATOR_RESOURCE_DEFAULT_ALLOWLIST = (
-    "account arn partition region resource_id resource_type service"
+    "account arn id partition region type service"
 )
 AWS_AGGREGATOR_RESOURCE_TAG_DEFAULT_ALLOWLIST = (
-    "account arn key partition region resource_id resource_type service value"
+    "account arn id key partition region type service value"
 )

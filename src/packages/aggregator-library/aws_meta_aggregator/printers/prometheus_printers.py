@@ -9,22 +9,22 @@ from aws_meta_aggregator.resources import Resource, ResourceTag
 _AVAILABLE_RESOURCE_LABELS: dict[str, Callable[[Resource], str | None]] = {
     "arn": lambda resource: resource.arn,
     "account": lambda resource: resource.account,
+    "id": lambda resource: resource.resource_id,
     "partition": lambda resource: resource.partition,
-    "resource_id": lambda resource: resource.resource_id,
-    "service": lambda resource: resource.service,
     "region": lambda resource: resource.region,
-    "resource_type": lambda resource: resource.resource_type,
+    "service": lambda resource: resource.service,
+    "type": lambda resource: resource.resource_type,
 }
 
 _AVAILABLE_RESOURCE_TAG_LABELS: dict[str, Callable[[ResourceTag], str | None]] = {
     "arn": lambda tag: tag.arn,
     "account": lambda tag: tag.account,
+    "id": lambda tag: tag.resource_id,
     "key": lambda tag: tag.key,
     "partition": lambda tag: tag.partition,
     "region": lambda tag: tag.region,
-    "resource_id": lambda tag: tag.resource_id,
-    "resource_type": lambda tag: tag.resource_type,
     "service": lambda tag: tag.service,
+    "type": lambda tag: tag.resource_type,
     "value": lambda tag: tag.value,
 }
 

@@ -27,7 +27,7 @@ Add space separated label names to the `PROMETHEUS_API_RESOURCE_LABEL_ALLOWLIST`
 
 ### Resource
 
-`resource{arn="arn:aws:ec2:eu-central-1:123456789012:subnet/subnet-db06309ec8ce58bb",account="123456789012",partition="aws",resource_id="subnet-db06309ec8ce58bb",service="ec2",region="eu-central-1",resource_type="subnet"} 1`
+`resource{arn="arn:aws:ec2:eu-central-1:123456789012:subnet/subnet-db06309ec8ce58bb",account="123456789012",partition="aws",id="subnet-db06309ec8ce58bb",service="ec2",region="eu-central-1",type="subnet"} 1`
 
 ### Resource Tag
 
