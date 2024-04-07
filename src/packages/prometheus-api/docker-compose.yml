@@ -1,0 +1,18 @@
+---
+services:
+  prometheus-api:
+    image: "edeckers/aws-prometheus-api"
+    build:
+      # ED This is `context` and `dockerfile` combination is a
+      #    workaround, that enables Dockerfile to break out of
+      #    its own directory, and access the 'packages' directory
+      context: "../../"
+      dockerfile: "packages/prometheus-api/Dockerfile"
+    environment:
+      PROMETHEUS_API_PORT: 8000
+      PROMETHEUS_API_HOST: "0.0.0.0"
+    volumes:
+      - $HOME/.aws/config:/root/.aws/config:ro
+      - $HOME/.aws/credentials:/root/.aws/credentials:ro
+    ports:
+      - 8000:8000

@@ -5,6 +5,10 @@ import uvicorn
 
 from prometheus_api.api import bootstrap_api
 from prometheus_api.bootstrap import bootstrap
+from prometheus_api.consts import (
+    APPLICATION_PROMETHEUS_HOST,
+    APPLICATION_PROMETHEUS_PORT,
+)
 
 api = bootstrap_api()
 
@@ -28,9 +32,11 @@ __run_api_parser.add_argument(
     "--host",
     type=str,
     required=False,
-    default="0.0.0.0",  # nosec # B104 - hardcoded bind all interfaces; by design
+    default=APPLICATION_PROMETHEUS_HOST,
 )
-__run_api_parser.add_argument("-p", "--port", type=int, required=False, default=8_000)
+__run_api_parser.add_argument(
+    "-p", "--port", type=int, required=False, default=APPLICATION_PROMETHEUS_PORT
+)
 
 
 def __run_api(arguments: argparse.Namespace) -> None:
