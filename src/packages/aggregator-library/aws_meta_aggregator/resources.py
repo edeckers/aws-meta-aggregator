@@ -3,6 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
+from aws_meta_aggregator.responses.paginator import Paginator
+
 
 def _sanitize_resource_info(resource_info_parts: list[str]) -> tuple[str | None, str]:
     if len(resource_info_parts) == 1:
@@ -101,26 +103,28 @@ class Resources:  # pylint: disable=too-few-public-methods
         self.__client = client
 
     def retrieve_resources(self) -> list[Resource]:
-        response = self.__client.get_resources(
-            ResourcesPerPage=100,
-            IncludeComplianceDetails=False,
-            ExcludeCompliantResources=False,
-        )
-
-        resources = response["ResourceTagMappingList"]
-
         resources_metas: list[Resource] = []
 
-        for resource in resources:
-            tag_metas = [
-                ResourceTag.from_arn(
-                    resource["ResourceARN"], key=tag["Key"], value=tag["Value"]
-                )
-                for tag in resource["Tags"]
-            ]
+        paginator = Paginator(
+            self.__client.get_resources,
+            resources_per_page=100,
+            include_compliance_details=False,
+            exclude_compliant_resources=False,
+        )
 
-            resources_metas.append(
-                Resource.from_arn(arn=resource["ResourceARN"], tags=tag_metas)
-            )
+        for page in paginator.page():
+            resources = page["ResourceTagMappingList"]
+
+            for resource in resources:
+                tag_metas = [
+                    ResourceTag.from_arn(
+                        resource["ResourceARN"], key=tag["Key"], value=tag["Value"]
+                    )
+                    for tag in resource["Tags"]
+                ]
+
+                resources_metas.append(
+                    Resource.from_arn(arn=resource["ResourceARN"], tags=tag_metas)
+                )
 
         return resources_metas
