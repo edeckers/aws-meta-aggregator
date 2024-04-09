@@ -4,6 +4,7 @@ from aws_meta_aggregator.consts import (
     AWS_AGGREGATOR_RESOURCE_DEFAULT_ALLOWLIST,
     AWS_AGGREGATOR_RESOURCE_TAG_DEFAULT_ALLOWLIST,
 )
+from aws_meta_aggregator.costs import Cost
 from aws_meta_aggregator.resources import Resource, ResourceTag
 
 _AVAILABLE_RESOURCE_LABELS: dict[str, Callable[[Resource], str | None]] = {
@@ -80,3 +81,16 @@ class PrometheusTagsPrinter:  # pylint: disable=too-few-public-methods
             )
 
         return "\n".join(output)
+
+
+class PrometheusCostPrinter:  # pylint: disable=too-few-public-methods
+    def print(self, resource: Cost) -> str:
+        return "".join(
+            [
+                "cost{",
+                f'dimension="{resource.dimension}",',
+                f'name="{resource.name}",',
+                f'currency="{resource.currency}"',
+                f"}} {resource.cost:.10f}",
+            ]
+        )

@@ -106,10 +106,12 @@ class Resources:  # pylint: disable=too-few-public-methods
         resources_metas: list[Resource] = []
 
         paginator = Paginator(
-            self.__client.get_resources,
-            resources_per_page=100,
-            include_compliance_details=False,
-            exclude_compliant_resources=False,
+            lambda token: self.__client.get_resources(
+                PaginationToken=token or "",
+                ResourcesPerPage=100,
+                IncludeComplianceDetails=False,
+                ExcludeCompliantResources=False,
+            ),
         )
 
         for page in paginator.page():

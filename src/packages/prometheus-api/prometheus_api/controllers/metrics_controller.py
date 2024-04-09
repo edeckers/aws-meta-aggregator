@@ -1,6 +1,8 @@
 import boto3
 import structlog
+from aws_meta_aggregator.costs import Costs
 from aws_meta_aggregator.printers.prometheus_printers import (
+    PrometheusCostPrinter,
     PrometheusResourcePrinter,
     PrometheusTagsPrinter,
 )
@@ -29,6 +31,8 @@ class MetricsController:  # pylint: disable=too-few-public-methods
         resources_client = Resources(boto3.client("resourcegroupstaggingapi"))
 
         resources = resources_client.retrieve_resources()
+        costs_client = Costs(boto3.client("ce"))
+        costs = costs_client.retrieve_for_resources()
 
         resource_printer = PrometheusResourcePrinter(
             allowlist=self.__resource_label_allowlist
@@ -36,12 +40,16 @@ class MetricsController:  # pylint: disable=too-few-public-methods
         tags_printer = PrometheusTagsPrinter(
             allowlist=self.__resource_tag_label_allowlist
         )
+        cost_printer = PrometheusCostPrinter()
 
         output = []
         for resource in resources:
             output.append(resource_printer.print(resource))
 
             output.append(tags_printer.print(resource.tags))
+
+        for cost in costs:
+            output.append(cost_printer.print(cost))
 
         _logger.info(
             "Finished metrics request",

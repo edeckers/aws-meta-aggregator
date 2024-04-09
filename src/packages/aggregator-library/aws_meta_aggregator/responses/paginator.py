@@ -1,47 +1,26 @@
-from abc import ABC, abstractmethod
 from typing import Any, Callable, Iterator
 
 
-class Pageable(ABC):  # pylint: disable=too-few-public-methods
-    @abstractmethod
-    def __call__(
-        self,
-        PaginationToken: str,  # pylint: disable=invalid-name
-        ResourcesPerPage: int = 100,  # pylint: disable=invalid-name
-        IncludeComplianceDetails: bool = False,  # pylint: disable=invalid-name
-        ExcludeCompliantResources: bool = False,  # pylint: disable=invalid-name
-    ) -> dict[str, Any]:
-        pass
-
-
 class Paginator:  # pylint: disable=too-few-public-methods
-    __pager: Callable[[str], dict[str, Any]]
+    __pager: Callable[[str | None], dict[str, Any]]
 
     def __init__(
         self,
-        pager: Pageable,
-        resources_per_page: int = 100,  # pylint: disable=invalid-name
-        include_compliance_details: bool = False,  # pylint: disable=invalid-name
-        exclude_compliant_resources: bool = False,  # pylint: disable=invalid-name
+        pager: Callable[[str | None], dict[str, Any]],
+        token_key: str = "PaginationToken",
     ) -> None:
-        self.__pager = lambda token: pager(
-            PaginationToken=token,
-            ResourcesPerPage=resources_per_page,
-            IncludeComplianceDetails=include_compliance_details,
-            ExcludeCompliantResources=exclude_compliant_resources,
-        )
+        self.__pager = pager
+        self.__token_key = token_key
 
     def page(self) -> Iterator[dict[str, Any]]:
-        token = None
+        maybe_token: str | None = None
 
         while True:
-            response = self.__pager(
-                token or "",
-            )
+            response = self.__pager(maybe_token)
 
             yield response
 
-            if (not "PaginationToken" in response) or (not response["PaginationToken"]):
+            if (not self.__token_key in response) or (not response[self.__token_key]):
                 break
 
-            token = response["PaginationToken"]
+            maybe_token = response[self.__token_key]
