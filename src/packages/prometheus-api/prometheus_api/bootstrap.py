@@ -6,7 +6,7 @@ from typing import Any, Callable
 import structlog
 from structlog.types import EventDict, WrappedLogger
 
-from prometheus_api.consts import APPLICATION_LOG_RENDERER
+from prometheus_api.consts import APPLICATION_LOG_LEVEL_BOTO3, APPLICATION_LOG_RENDERER
 
 
 class AWSCloudWatchLogsRenderer:  # pylint: disable=too-few-public-methods
@@ -59,9 +59,11 @@ def __bootstrap_application_logger() -> None:
     logging.basicConfig(
         format="%(message)s",
         stream=sys.stdout,
-        level=logging.DEBUG,
+        level=logging.DEBUG,  # ED Set to lowest level possible, so downstream loggers can filter individually
         force=True,
     )
+    logging.getLogger("botocore").setLevel(APPLICATION_LOG_LEVEL_BOTO3)
+    logging.getLogger("boto3").setLevel(APPLICATION_LOG_LEVEL_BOTO3)
 
 
 def __bootstrap_loggers() -> None:
